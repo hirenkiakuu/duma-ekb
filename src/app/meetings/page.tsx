@@ -1,4 +1,4 @@
-"use client"; // надо подумать как компоненты серверные выстроить, если это вообще возможно
+"use client"; // reconsider this page
 
 import { useState } from "react";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ import {
   MEETING_TYPES,
   PRESIDING_LIST,
   meetings,
-} from "../../mock/mock";
+} from "../../utils/mock";
 
 const { Option } = Select;
 const { Title } = Typography;
