@@ -7,17 +7,26 @@
 import { Typography, Select, Input, DatePicker, List, Spin } from "antd";
 import MeetingCard from "./ui/MeetingCard/MeetingCard";
 import { useMeetings } from "./lib/hooks/useMeetings";
+import styles from "./MeetingsPage.module.css";
 
 const { Option } = Select;
 const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
-export default function HomePage() {
-  const { data, isLoading, isError } = useMeetings();
+export default function MeetingsPage() {
+  const { data, isLoading } = useMeetings();
 
   return (
     <>
-      <div style={{ maxWidth: 1200, margin: "20px auto", padding: 20 }}>
+      {/* вынести стили */}
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: "20px auto",
+          padding: 20,
+          minHeight: "100vh",
+        }}
+      >
         <div>
           <Title level={3}>Поиск заседаний</Title>
 
@@ -27,7 +36,7 @@ export default function HomePage() {
             style={{ width: "100%", marginBottom: 10 }}
             allowClear
           >
-            <Option>option</Option>
+            <Option value="">option</Option>
           </Select>
 
           {/* Ключевые слова - пока инпут */}
@@ -42,7 +51,7 @@ export default function HomePage() {
             style={{ width: "100%", marginBottom: 10 }}
             allowClear
           >
-            <Option>option</Option>
+            <Option value="">option</Option>
           </Select>
 
           {/* Поиск по вопросу */}
@@ -71,7 +80,9 @@ export default function HomePage() {
           />
         </div>
         {isLoading ? (
-          <Spin />
+          <div className={styles["spin-container"]}>
+            <Spin />
+          </div>
         ) : (
           <List
             bordered

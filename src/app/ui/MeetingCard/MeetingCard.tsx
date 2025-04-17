@@ -2,36 +2,22 @@ import { Collapse, List, Tag } from "antd";
 import Link from "next/link";
 import { Meeting } from "@/app/lib/models/meeting.interface";
 import { RightOutlined } from "@ant-design/icons";
+import {
+  classificationsTranslations,
+  solutionTranslations,
+  tagColors,
+  typesTranslations,
+} from "@/app/lib/constants/constants";
 
 // внести правки в стили
-// дописать переводы и цвета
+// заменить дату на нормальную
+// добавить номер дела внутрь описания вопроса?
 
 const { Panel } = Collapse;
 
-const tagColors: Record<string, string> = {
-  ongoing: "blue",
-  regular: "default",
-  emergency: "orange",
-  extra: "volcano",
-};
-
-const typesTranslations: Record<string, string> = {
-  regular: "Очередное",
-  ongoing: "Продолженное",
-  emergency: "Чрезвычайное",
-  extra: "Экстренное",
-};
-
-const solutionTranslations: Record<string, string> = {
-  agree: "Согласны",
-  put_off: "Отложить",
-  refuse: "Отказать",
-  take_note: "Принять к сведению",
-};
-
 export default function MeetingCard({ meeting }: { meeting: Meeting }) {
-  const tagColor = tagColors[meeting.meeting_type];
-  const typeTranslation = typesTranslations[meeting.meeting_type];
+  const tagColor = tagColors[meeting.meetingType];
+  const typeTranslation = typesTranslations[meeting.meetingType];
 
   return (
     <List.Item style={{ display: "block" }}>
@@ -63,10 +49,10 @@ export default function MeetingCard({ meeting }: { meeting: Meeting }) {
               <strong>Председатель:</strong> {meeting.presiding}
             </div>
             <div>
-              <strong>Депутатов:</strong> {meeting.deputies}
+              <strong>Количество гласных:</strong> {meeting.deputies}
             </div>
             <div>
-              <strong>Протокол №:</strong> {meeting.protocol_number}
+              <strong>Протокол №:</strong> {meeting.protocolNumber}
             </div>
           </div>
 
@@ -85,7 +71,14 @@ export default function MeetingCard({ meeting }: { meeting: Meeting }) {
                     <p>
                       <b>Решение</b>: {solutionTranslations[question.solution]}
                     </p>
-
+                    <p>
+                      <b>Авторская классификация</b>:{" "}
+                      {
+                        classificationsTranslations[
+                          question.authorClassification
+                        ]
+                      }
+                    </p>
                     <div style={{ marginTop: 10 }}>
                       <b>тэги: </b>
                       {question.tags.map((tag) => (

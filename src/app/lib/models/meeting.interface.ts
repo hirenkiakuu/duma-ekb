@@ -3,26 +3,26 @@ interface Tag {
   title: string;
 }
 
-interface Question {
+export interface Question {
   id: number | string;
   number: string;
   description: string;
   quorum: boolean;
-  position_1870: string;
-  position_1892: string;
-  author_classification: string;
+  position1870: string;
+  position1892: string;
+  authorClassification: string;
   solution: string;
-  solution_content: string;
-  case_number: string;
-  sheet_numbers: string;
+  solutionContent: string;
+  caseNumber: string;
+  sheetNumbers: string;
   tags: Tag[];
 }
 
 export interface Meeting {
   id: number | string;
   date: string;
-  protocol_number: string;
-  meeting_type: string;
+  protocolNumber: string;
+  meetingType: string;
   deputies: number;
   presiding: string;
   questions: Question[];
