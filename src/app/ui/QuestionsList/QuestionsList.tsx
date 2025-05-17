@@ -1,6 +1,6 @@
-"use server";
+"use client";
 
-import { List, Card, Divider, Typography, Tag } from "antd";
+import { List, Card, Typography, Tag } from "antd";
 import { Question } from "@/app/lib/models/meeting.interface";
 
 const { Text } = Typography;
@@ -21,7 +21,51 @@ const classificationsTranslations: Record<string, string> = {
   legal: "Юридический",
 };
 
-export default async function QuestionsList({
+type CardItem = {
+  title: string;
+  value: keyof Question;
+  render?: (value: any) => React.ReactNode;
+};
+
+const config: CardItem[] = [
+  { title: "Описание", value: "description" },
+  {
+    title: "Наличие кворума",
+    value: "quorum",
+    render: (value: boolean) => (value ? "Да" : "Нет"),
+  },
+  {
+    title: "Позиция 1870",
+    value: "position1870",
+  },
+  {
+    title: "Позиция 1892",
+    value: "position1892",
+  },
+  {
+    title: "Классификация автора",
+    value: "authorClassification",
+    render: (val: string) => classificationsTranslations[val] || val,
+  },
+  {
+    title: "Решение",
+    value: "solution",
+  },
+  {
+    title: "Содержание решения",
+    value: "solutionContent",
+  },
+  {
+    title: "Номер дела",
+    value: "caseNumber",
+  },
+  {
+    title: "Номера листов",
+    value: "sheetNumbers",
+  },
+];
+
+export default function QuestionsList({
   questions,
 }: {
   questions: Question[];
@@ -33,44 +77,17 @@ export default async function QuestionsList({
       renderItem={(question: Question) => (
         <List.Item>
           <Card title={`Вопрос №${question.number}`} style={{ width: "100%" }}>
-            <Text strong>Описание: </Text>
-            <Text>{question.description}</Text>
-            <Divider />
-
-            <Text strong>Наличие кворума: </Text>
-            <Text>{question.quorum ? "Да" : "Нет"}</Text>
-            <br />
-
-            <Text strong>Позиция 1870: </Text>
-            <Text>{question.position1870}</Text>
-            <br />
-
-            <Text strong>Позиция 1892: </Text>
-            <Text>{question.position1892}</Text>
-            <br />
-
-            <Text strong>Классификация автора: </Text>
-            <Text>
-              {classificationsTranslations[question.authorClassification] ||
-                question.authorClassification}
-            </Text>
-            <br />
-
-            <Text strong>Решение: </Text>
-            <Text>{question.solution}</Text>
-            <br />
-
-            <Text strong>Содержание решения: </Text>
-            <Text>{question.solutionContent}</Text>
-            <br />
-
-            <Text strong>Номер дела: </Text>
-            <Text>{question.caseNumber}</Text>
-            <br />
-
-            <Text strong>Номера листов: </Text>
-            <Text>{question.sheetNumbers}</Text>
-            <br />
+            {config.map((item) => (
+              <div key={item.value.toString()}>
+                <Text strong>{item.title}: </Text>
+                <Text>
+                  {item.render
+                    ? item.render(question[item.value])
+                    : (question[item.value] as string)}
+                </Text>
+                <br />
+              </div>
+            ))}
 
             <Text strong>Теги: </Text>
             <div style={{ marginTop: 5, marginBottom: 10 }}>

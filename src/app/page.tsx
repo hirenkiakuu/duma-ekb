@@ -15,69 +15,37 @@ const { RangePicker } = DatePicker;
 
 export default function MeetingsPage() {
   const { data, isLoading } = useMeetings();
+  console.log(data);
 
   return (
     <>
-      {/* вынести стили */}
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: "20px auto",
-          padding: 20,
-          minHeight: "100vh",
-        }}
-      >
-        <div>
+      <div className={styles["meetings-page-container"]}>
+        <div className={styles["filter-panel"]}>
           <Title level={3}>Поиск заседаний</Title>
 
           {/* Классификация */}
-          <Select
-            placeholder="Авторская классификация"
-            style={{ width: "100%", marginBottom: 10 }}
-            allowClear
-          >
+
+          <Select placeholder="Авторская классификация" allowClear>
             <Option value="">option</Option>
           </Select>
 
           {/* Ключевые слова - пока инпут */}
-          <Input
-            placeholder="Ключевые слова"
-            style={{ width: "100%", marginBottom: 10 }}
-          />
+          <Input placeholder="Ключевые слова" className={styles["filter"]} />
 
           {/* Фильтр по председательствующему */}
-          <Select
-            placeholder="Председательствующий"
-            style={{ width: "100%", marginBottom: 10 }}
-            allowClear
-          >
+          <Select placeholder="Председательствующий" allowClear>
             <Option value="">option</Option>
           </Select>
 
           {/* Поиск по вопросу */}
           <div style={{ display: "flex", gap: "10px" }}>
-            <Input
-              type="number"
-              placeholder="Номер дела"
-              style={{ width: "100%", marginBottom: 10 }}
-            />
-            <Input
-              type="number"
-              placeholder="Номер протокола"
-              style={{ width: "100%", marginBottom: 10 }}
-            />
-            <Input
-              type="number"
-              placeholder="Номер вопроса"
-              style={{ width: "100%", marginBottom: 10 }}
-            />
+            <Input type="number" placeholder="Номер дела" />
+            <Input type="number" placeholder="Номер протокола" />
+            <Input type="number" placeholder="Номер вопроса" />
           </div>
 
           {/* Выбор диапазона дат */}
-          <RangePicker
-            format="YYYY-MM-DD"
-            style={{ width: "100%", marginBottom: 10 }}
-          />
+          <RangePicker format="YYYY-MM-DD" />
         </div>
         {isLoading ? (
           <div className={styles["spin-container"]}>
@@ -86,7 +54,7 @@ export default function MeetingsPage() {
         ) : (
           <List
             bordered
-            dataSource={data}
+            dataSource={data.items}
             renderItem={(meeting) => (
               <MeetingCard meeting={meeting} key={meeting.id} />
             )}

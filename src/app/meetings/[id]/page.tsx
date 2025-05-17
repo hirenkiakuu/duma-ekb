@@ -1,17 +1,12 @@
 "use client"; // сделать серверным
 
-import { Typography, List, Card, Divider, Tag, Spin } from "antd";
+import { Typography, Spin } from "antd";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { useMeeting } from "@/app/lib/hooks/useMeeting";
-import { Question } from "@/app/lib/models/meeting.interface";
-import {
-  classificationsTranslations,
-  solutionTranslations,
-  typesTranslations,
-} from "@/app/lib/constants/constants";
-import { formatSheetNumber } from "@/app/lib/helpers/formatters";
+import { typesTranslations } from "@/app/lib/constants/constants";
+import QuestionsList from "@/app/ui/QuestionsList/QuestionsList";
 
 const { Title, Text } = Typography;
 
@@ -53,73 +48,7 @@ export default function MeetingDetails() {
         Вопросы к обсуждению:
       </Title>
 
-      <List
-        bordered
-        dataSource={data.questions}
-        renderItem={(question: Question) => (
-          <List.Item>
-            <Card
-              title={`Вопрос №${question.number}`}
-              style={{ width: "100%" }}
-            >
-              <Text strong>Описание: </Text>
-              <Text>{question.description}</Text>
-              <Divider />
-
-              <Text strong>Наличие кворума: </Text>
-              <Text>{question.quorum ? "Да" : "Нет"}</Text>
-              <br />
-
-              <Text strong>Позиция 1870: </Text>
-              <Text>{question.position1870}</Text>
-              <br />
-
-              <Text strong>Позиция 1892: </Text>
-              <Text>{question.position1892}</Text>
-              <br />
-
-              <Text strong>Классификация автора: </Text>
-              <Text>
-                {classificationsTranslations[question.authorClassification] ||
-                  question.authorClassification}
-              </Text>
-              <br />
-
-              <Text strong>Решение: </Text>
-              <Text>{solutionTranslations[question.solution]}</Text>
-              <br />
-
-              <Text strong>Содержание решения: </Text>
-              <Text>{question.solutionContent || "-"}</Text>
-              <br />
-
-              <Text strong>Номер дела: </Text>
-              <Text>{question.caseNumber}</Text>
-              <br />
-
-              <Text strong>Номера листов: </Text>
-              <Text>
-                <Text>
-                  {formatSheetNumber(question.sheetNumbers[0])} -{" "}
-                  {formatSheetNumber(question.sheetNumbers[1])}
-                </Text>
-              </Text>
-              <br />
-
-              <Text strong>Теги: </Text>
-              <div style={{ marginTop: 5, marginBottom: 10 }}>
-                {question.tags?.length ? (
-                  question.tags.map((tag) => (
-                    <Tag key={tag.id}>{tag.title}</Tag>
-                  ))
-                ) : (
-                  <Text>—</Text>
-                )}
-              </div>
-            </Card>
-          </List.Item>
-        )}
-      />
+      <QuestionsList questions={data.questions} />
 
       <div style={{ marginTop: 20 }}>
         <Link href="/">← Вернуться к списку заседаний</Link>
