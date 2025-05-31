@@ -1,57 +1,79 @@
-"use client"; // сделать серверным
-
-import { Typography, Spin } from "antd";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { useParams } from "next/navigation";
-import { useMeeting } from "@/app/lib/hooks/useMeeting";
+import { Meeting } from "@/app/lib/models/meeting.interface";
 import { typesTranslations } from "@/app/lib/constants/constants";
 import QuestionsList from "@/app/ui/QuestionsList/QuestionsList";
 
-const { Title, Text } = Typography;
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
 
 // добавить переводы
-export default function MeetingDetails() {
-  const params = useParams();
-  const id = params?.id ?? "";
+export default async function MeetingDetails({ params }: PageProps) {
+  const { id } = await params;
 
-  const { data, isLoading, isError } = useMeeting(id);
+  const res = await fetch(`http://localhost:8000/api/meetings/${id}`, {
+    cache: "no-store",
+  });
 
-  console.log(data?.questions[0].sheetNumbers);
+  if (!res.ok) {
+    // Если API вернул ошибку, показываем сообщение
+    return (
+      <main style={{ padding: 32 }}>
+        <h1 style={{ fontSize: 24, fontWeight: 600 }}>Детали заседания</h1>
+        <p style={{ color: "red" }}>
+          Ошибка при загрузке данных заседания (ID: {id}) — статус {res.status}
+        </p>
+        <Link href="/meetings">← Вернуться к списку заседаний</Link>
+      </main>
+    );
+  }
 
-  if (isLoading) return <Spin />;
-  if (isError || !data) return <div>Ошибка загрузки заседания</div>;
+  const meeting = (await res.json()) as Meeting;
 
   return (
     <div style={{ maxWidth: 800, margin: "20px auto", padding: 20 }}>
-      <Title level={2}>
-        Заседание от {dayjs(data.date).format("DD.MM.YYYY")}
-      </Title>
+      <h2
+        className="ant-typography css-dev-only-do-not-override-1a3rktk"
+        style={{ marginBottom: 16 }}
+      >
+        Заседание от {dayjs(meeting.date).format("DD.MM.YYYY")}
+      </h2>
 
-      <Text strong>Номер протокола: </Text>
-      <Text>{data.protocolNumber}</Text>
-      <br />
+      <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
+        <strong>Номер протокола:</strong>{" "}
+        {meeting.questions?.[0]?.protocolNumber ?? "—"}
+      </p>
 
-      <Text strong>Тип заседания: </Text>
-      <Text>{typesTranslations[data.meetingType]}</Text>
-      <br />
+      <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
+        <strong>Тип заседания:</strong> {typesTranslations[meeting.meetingType]}
+      </p>
 
-      <Text strong>Количество гласных: </Text>
-      <Text>{data.deputies}</Text>
-      <br />
+      <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
+        <strong>Количество гласных:</strong> {meeting.deputies}
+      </p>
 
-      <Text strong>Председательствующий: </Text>
-      <Text>{data.presiding}</Text>
-      <br />
+      <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
+        <strong>Председательствующий:</strong> {meeting.presiding}
+      </p>
 
-      <Title level={3} style={{ marginTop: 20 }}>
+      <h4
+        className="ant-typography css-dev-only-do-not-override-1a3rktk"
+        style={{ marginTop: 24, marginBottom: 12 }}
+      >
         Вопросы к обсуждению:
-      </Title>
+      </h4>
 
-      <QuestionsList questions={data.questions} />
+      <QuestionsList questions={meeting.questions} />
 
       <div style={{ marginTop: 20 }}>
-        <Link href="/">← Вернуться к списку заседаний</Link>
+        <Link href="/">
+          <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
+            ← Вернуться к списку заседаний
+          </p>
+        </Link>
       </div>
     </div>
   );
