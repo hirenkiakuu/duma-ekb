@@ -1,3 +1,5 @@
+"use client";
+
 import { Collapse, List, Tag } from "antd";
 import Link from "next/link";
 import { Meeting } from "@/app/lib/models/meeting.interface";
@@ -52,7 +54,8 @@ export default function MeetingCard({ meeting }: { meeting: Meeting }) {
               <strong>Количество гласных:</strong> {meeting.deputies}
             </div>
             <div>
-              <strong>Протокол №:</strong> {meeting.protocolNumber}
+              <strong>Протокол №:</strong> {meeting.questions[0].protocolNumber}
+              {/* /** поправить модель данных **/}
             </div>
           </div>
 

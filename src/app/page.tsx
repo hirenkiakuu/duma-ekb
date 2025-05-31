@@ -1,108 +1,146 @@
-"use client"; // надо подумать как компоненты серверные выстроить, если это вообще возможно
-
-// children will be removed in next version, check items
-
-// разбить на компоненты?
-
-import {
-  Typography,
-  Select,
-  Input,
-  DatePicker,
-  List,
-  Spin,
-  Pagination,
-} from "antd";
-import MeetingCard from "./ui/MeetingCard/MeetingCard";
-import { useMeetings } from "./lib/hooks/useMeetings";
+import React from "react";
+import { MeetingsApiResponse, MeetingItem } from "./types"; // переделать
+import PaginationComponent from "./PaginationComponent";
+import MeetingFilters from "./MeetingFilters";
+import MeetingsList from "./MeetingsList";
 import styles from "./MeetingsPage.module.css";
-import { useEffect, useState } from "react";
 
-const { Option } = Select;
-const { Title } = Typography;
-const { RangePicker } = DatePicker;
-
-const LOCAL_STORAGE_KEY = "meetings_current_page";
-
-export default function MeetingsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
-
-  const { data, isLoading, isFetching } = useMeetings(currentPage, pageSize);
-
-  console.log(data);
-
-  // возможно стоит переделать логику добавления в localstorage
-  useEffect(() => {
-    const savedPage = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedPage) {
-      setCurrentPage(Number(savedPage));
-    }
-  }, []);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    localStorage.setItem(LOCAL_STORAGE_KEY, String(page));
+interface PageProps {
+  searchParams: {
+    classification?: string;
+    tags?: string;
+    presiding?: string;
+    case?: string;
+    protocol?: string;
+    question?: string;
+    date_from?: string;
+    date_to?: string;
+    page?: string;
+    per_page?: string;
+    [key: string]: string | string[] | undefined;
   };
+}
+
+export default async function Page({ searchParams }: PageProps) {
+  // 1. Парсим page / per_page из searchParams ----- Возможно стоит переделать
+  const page = searchParams.page
+    ? parseInt(
+        Array.isArray(searchParams.page)
+          ? searchParams.page[0]
+          : searchParams.page,
+        10
+      )
+    : 1;
+  const perPage = searchParams.per_page
+    ? parseInt(
+        Array.isArray(searchParams.per_page)
+          ? searchParams.per_page[0]
+          : searchParams.per_page,
+        10
+      )
+    : 10;
+
+  // 2. Собираем объект params, включая только непустые поля
+  const params: Record<string, string> = {};
+
+  if (searchParams.classification) {
+    params.classification = Array.isArray(searchParams.classification)
+      ? searchParams.classification[0]
+      : searchParams.classification;
+  }
+  if (searchParams.tags) {
+    params.tags = Array.isArray(searchParams.tags)
+      ? searchParams.tags[0]
+      : searchParams.tags;
+  }
+  if (searchParams.presiding) {
+    params.presiding = Array.isArray(searchParams.presiding)
+      ? searchParams.presiding[0]
+      : searchParams.presiding;
+  }
+  if (searchParams.case) {
+    params.case = Array.isArray(searchParams.case)
+      ? searchParams.case[0]
+      : searchParams.case;
+  }
+  if (searchParams.protocol) {
+    params.protocol = Array.isArray(searchParams.protocol)
+      ? searchParams.protocol[0]
+      : searchParams.protocol;
+  }
+  if (searchParams.question) {
+    params.question = Array.isArray(searchParams.question)
+      ? searchParams.question[0]
+      : searchParams.question;
+  }
+  if (searchParams.date_from) {
+    params.date_from = Array.isArray(searchParams.date_from)
+      ? searchParams.date_from[0]
+      : searchParams.date_from;
+  }
+  if (searchParams.date_to) {
+    params.date_to = Array.isArray(searchParams.date_to)
+      ? searchParams.date_to[0]
+      : searchParams.date_to;
+  }
+
+  // Всегда ставим страничку и размер
+  params.page = String(page);
+  params.per_page = String(perPage);
+
+  // ---- вынести в отдельную функцию? ----
+  // 3. Делаем SSR-запрос к API
+  const queryString = new URLSearchParams(params).toString();
+  const res = await fetch(`http://localhost:8000/api/meetings?${queryString}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    // Если ошибка, рендерим простое сообщение
+    return (
+      <main style={{ padding: 32 }}>
+        <p style={{ color: "red" }}>Ошибка при загрузке данных: {res.status}</p>
+      </main>
+    );
+  }
+  // ---- вынести в отдельную функцию? ----
+
+  const data = (await res.json()) as MeetingsApiResponse;
+  const meetings: MeetingItem[] = data.items || [];
+  const totalPages = data.totalPages || 1;
+  const currentPage = data.currentPage || page;
 
   return (
-    <>
-      <div className={styles["meetings-page-container"]}>
-        {/* вынести в отдельный компонент  */}
-        <div className={styles["filter-panel"]}>
-          <Title level={3}>Поиск заседаний</Title>
+    <main style={{ padding: 32 }} className={styles["meetings-page-container"]}>
+      {/* Панель фильтров */}
+      <MeetingFilters
+        currentFilters={{
+          classification: params.classification,
+          tags: params.tags,
+          presiding: params.presiding,
+          case: params.case,
+          protocol: params.protocol,
+          question: params.question,
+          date_from: params.date_from,
+          date_to: params.date_to,
+          page: String(currentPage),
+          per_page: String(perPage),
+        }}
+      />
 
-          {/* Классификация */}
-
-          <Select placeholder="Авторская классификация" allowClear>
-            <Option value="">option</Option>
-          </Select>
-
-          {/* Ключевые слова - пока инпут */}
-          <Input placeholder="Ключевые слова" className={styles["filter"]} />
-
-          {/* Фильтр по председательствующему */}
-          <Select placeholder="Председательствующий" allowClear>
-            <Option value="">option</Option>
-          </Select>
-
-          {/* Поиск по вопросу */}
-          <div style={{ display: "flex", gap: "10px" }}>
-            <Input type="number" placeholder="Номер дела" />
-            <Input type="number" placeholder="Номер протокола" />
-            <Input type="number" placeholder="Номер вопроса" />
-          </div>
-
-          {/* Выбор диапазона дат */}
-          <RangePicker format="YYYY-MM-DD" />
-        </div>
-        {isLoading ? (
-          <div className={styles["spin-container"]}>
-            <Spin />
-          </div>
-        ) : (
-          <>
-            {/* Можно добавить spin */}
-            <div className={styles["meetings-list-container"]}>
-              <List
-                bordered
-                dataSource={data?.items}
-                renderItem={(meeting) => (
-                  <MeetingCard meeting={meeting} key={meeting.id} />
-                )}
-              />
-            </div>
-            {/* поменять модель Question  */}
-            <Pagination
-              current={currentPage}
-              pageSize={pageSize}
-              total={data?.totalPages * pageSize}
-              onChange={handlePageChange}
-              showSizeChanger={false}
-            />
-          </>
-        )}
+      {/* Список заседаний */}
+      <div style={{ marginTop: 24 }}>
+        <MeetingsList meetings={meetings} />
       </div>
-    </>
+
+      {/* Пагинация */}
+      <div style={{ marginTop: 32, display: "flex", justifyContent: "center" }}>
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          perPage={perPage}
+        />
+      </div>
+    </main>
   );
 }
