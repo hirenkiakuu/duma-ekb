@@ -1,7 +1,7 @@
 import Link from "next/link";
 import dayjs from "dayjs";
 import { Meeting } from "@/app/lib/models/meeting.interface";
-import { typesTranslations } from "@/app/lib/constants/constants";
+import { API_BASE, typesTranslations } from "@/app/lib/constants/constants";
 import QuestionsList from "@/app/ui/QuestionsList/QuestionsList";
 
 interface PageProps {
@@ -14,7 +14,7 @@ interface PageProps {
 export default async function MeetingDetails({ params }: PageProps) {
   const { id } = await params;
 
-  const res = await fetch(`http://localhost:8000/api/meetings/${id}`, {
+  const res = await fetch(`${API_BASE}/api/meetings/${id}`, {
     cache: "no-store",
   });
 
@@ -35,16 +35,36 @@ export default async function MeetingDetails({ params }: PageProps) {
 
   return (
     <div style={{ maxWidth: 800, margin: "20px auto", padding: 20 }}>
-      <h2
-        className="ant-typography css-dev-only-do-not-override-1a3rktk"
-        style={{ marginBottom: 16 }}
+      <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          gap: "10px",
+          alignItems: "center",
+        }}
       >
-        Заседание от {dayjs(meeting.date).format("DD.MM.YYYY")}
-      </h2>
+        <Link href="/meetings" style={{ display: "block" }}>
+          <p
+            className="ant-typography css-dev-only-do-not-override-1a3rktk"
+            style={{ fontSize: "30px" }}
+          >
+            ←
+          </p>
+        </Link>
+        <h2
+          className="ant-typography css-dev-only-do-not-override-1a3rktk"
+          style={{ margin: "0px" }}
+        >
+          Заседание от {dayjs(meeting.date).format("DD.MM.YYYY")}
+        </h2>
+      </div>
 
       <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
-        <strong>Номер протокола:</strong>{" "}
-        {meeting.questions?.[0]?.protocolNumber ?? "—"}
+        <strong>Номер протокола:</strong> {meeting.protocolNumber || "—"}
+      </p>
+
+      <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
+        <strong>Номер дела:</strong> {meeting.caseNumber || "—"}
       </p>
 
       <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
@@ -69,7 +89,7 @@ export default async function MeetingDetails({ params }: PageProps) {
       <QuestionsList questions={meeting.questions} />
 
       <div style={{ marginTop: 20 }}>
-        <Link href="/">
+        <Link href="/meetings">
           <p className="ant-typography css-dev-only-do-not-override-1a3rktk">
             ← Вернуться к списку заседаний
           </p>

@@ -34,3 +34,6 @@ export const solutionTranslations: Record<string, string> = {
   refuse: "Отказать",
   take_note: "Принять к сведению",
 };
+
+export const API_BASE =
+  process.env.BACKEND_URL || "http://host.docker.internal:8000";

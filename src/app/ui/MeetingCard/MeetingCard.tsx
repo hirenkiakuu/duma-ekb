@@ -48,13 +48,13 @@ export default function MeetingCard({ meeting }: { meeting: Meeting }) {
           {/* Краткие данные по заседанию */}
           <div style={{ marginBottom: 10 }}>
             <div>
-              <strong>Председатель:</strong> {meeting.presiding}
+              <strong>Председательствующий:</strong> {meeting.presiding}
             </div>
             <div>
               <strong>Количество гласных:</strong> {meeting.deputies}
             </div>
             <div>
-              <strong>Протокол №:</strong> {meeting.questions[0].protocolNumber}
+              <strong>Протокол №:</strong> {meeting.protocolNumber}
               {/* /** поправить модель данных **/}
             </div>
           </div>
@@ -69,10 +69,11 @@ export default function MeetingCard({ meeting }: { meeting: Meeting }) {
                 renderItem={(question) => (
                   <List.Item key={question.id}>
                     <p>
-                      <b>№{question.number}</b>: {question.description}
+                      <b>№ {question.number || "-"}</b>: {question.description}
                     </p>
                     <p>
-                      <b>Решение</b>: {solutionTranslations[question.solution]}
+                      <b>Решение</b>:{" "}
+                      {solutionTranslations[question.solution] || "-"}
                     </p>
                     <p>
                       <b>Авторская классификация</b>:{" "}
@@ -83,7 +84,7 @@ export default function MeetingCard({ meeting }: { meeting: Meeting }) {
                       }
                     </p>
                     <div style={{ marginTop: 10 }}>
-                      <b>тэги: </b>
+                      <b>Ключевые слова: </b>
                       {question.tags.map((tag) => (
                         <Tag key={tag.id}>{tag.title}</Tag>
                       ))}

@@ -2,6 +2,7 @@
 
 import { List, Card, Typography, Tag } from "antd";
 import { Question } from "@/app/lib/models/meeting.interface";
+import { solutionTranslations } from "@/app/lib/constants/constants";
 
 const { Text } = Typography;
 
@@ -19,7 +20,7 @@ const classificationsTranslations: Record<string, string> = {
   industry: "Промышленность",
   trading: "Торговля",
   legal: "Юридический",
-};
+}; // вынести в константы
 
 type CardItem = {
   title: string;
@@ -30,38 +31,37 @@ type CardItem = {
 const config: CardItem[] = [
   { title: "Описание", value: "description" },
   {
-    title: "Наличие кворума",
+    title: "Кворум",
     value: "quorum",
     render: (value: boolean) => (value ? "Да" : "Нет"),
   },
   {
-    title: "Позиция 1870",
+    title: "Положение 1870",
     value: "position1870",
   },
   {
-    title: "Позиция 1892",
+    title: "Положение 1892",
     value: "position1892",
   },
   {
-    title: "Классификация автора",
+    title: "Авторская классификация",
     value: "authorClassification",
     render: (val: string) => classificationsTranslations[val] || val,
   },
   {
     title: "Решение",
     value: "solution",
+    render: (val: string) => solutionTranslations[val] || val,
   },
   {
     title: "Содержание решения",
     value: "solutionContent",
-  },
-  {
-    title: "Номер дела",
-    value: "caseNumber",
+    render: (val: string) => val || "-",
   },
   {
     title: "Номера листов",
     value: "sheetNumbers",
+    render: (val: string[]) => val.join(" - "),
   },
 ];
 
@@ -89,7 +89,7 @@ export default function QuestionsList({
               </div>
             ))}
 
-            <Text strong>Теги: </Text>
+            <Text strong>Ключевые слова: </Text>
             <div style={{ marginTop: 5, marginBottom: 10 }}>
               {question.tags && question.tags.length > 0 ? (
                 question.tags.map((tag) => (
