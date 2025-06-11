@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
 import ReactQueryProvider from "./providers/queryProvider";
+import { ConfigProvider } from "antd";
+import ru_RU from "antd/locale/ru_RU";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +30,9 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AntdRegistry>
-          <ReactQueryProvider>{children}</ReactQueryProvider>
+          <ConfigProvider locale={ru_RU}>
+            <ReactQueryProvider>{children}</ReactQueryProvider>
+          </ConfigProvider>
         </AntdRegistry>
       </body>
     </html>
