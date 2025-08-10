@@ -15,7 +15,7 @@ interface CurrentFilters {
   presiding?: string;
   case?: string;
   protocol?: string;
-  question?: string;
+  question_number?: string;
   date_from?: string;
   date_to?: string;
   page?: string;
@@ -136,9 +136,9 @@ export default function MeetingFilters({
         <Input
           allowClear
           placeholder="Номер вопроса"
-          defaultValue={currentFilters.question || ""}
+          defaultValue={currentFilters.question_number || ""}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            updateParam("question", e.target.value)
+            updateParam("question_number", e.target.value)
           }
         />
       </div>
@@ -162,8 +162,8 @@ export default function MeetingFilters({
                 dayjs(currentFilters.date_to, "YYYY-MM-DD"),
               ]
             : [
-                dayjs("1980-01-01", "YYYY-MM-DD"),
-                dayjs("1980-02-01", "YYYY-MM-DD"),
+                dayjs("1895-01-01", "YYYY-MM-DD"),
+                dayjs("1914-02-01", "YYYY-MM-DD"),
               ]
         }
         onChange={handleDateRange}

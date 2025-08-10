@@ -13,7 +13,7 @@ interface PageProps {
     presiding?: string;
     case?: string;
     protocol?: string;
-    question?: string;
+    question_number?: string;
     date_from?: string;
     date_to?: string;
     page?: string;
@@ -69,10 +69,10 @@ export default async function Page({ searchParams }: PageProps) {
       ? searchParams.protocol[0]
       : searchParams.protocol;
   }
-  if (searchParams.question) {
-    params.question = Array.isArray(searchParams.question)
-      ? searchParams.question[0]
-      : searchParams.question;
+  if (searchParams.question_number) {
+    params.question_number = Array.isArray(searchParams.question_number)
+      ? searchParams.question_number[0]
+      : searchParams.question_number;
   }
   if (searchParams.date_from) {
     params.date_from = Array.isArray(searchParams.date_from)
@@ -121,7 +121,7 @@ export default async function Page({ searchParams }: PageProps) {
           presiding: params.presiding,
           case: params.case,
           protocol: params.protocol,
-          question: params.question,
+          question_number: params.question_number,
           date_from: params.date_from,
           date_to: params.date_to,
           page: String(currentPage),
