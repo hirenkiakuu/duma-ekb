@@ -35,5 +35,5 @@ export const solutionTranslations: Record<string, string> = {
   take_note: "Принять к сведению",
 };
 
-export const API_BASE = "http://localhost:8000"
-  // process.env.BACKEND_URL || "http://host.docker.internal:8000";
+export const API_BASE =
+  process.env.BACKEND_URL || "http://host.docker.internal:8000";
